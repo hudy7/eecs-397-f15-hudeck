@@ -1,4 +1,4 @@
-## Modern Robotic Programming, Fall 2015
+ls## Modern Robotic Programming, Fall 2015
 Welcome to Modern Robotic Programming!  This repository will contain all class-specific software, documentation,
 and will also function as a help center for students.
 
