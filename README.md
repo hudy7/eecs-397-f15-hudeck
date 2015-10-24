@@ -16,6 +16,12 @@ other students to assist you in a public setting.  If the issue is pressing and 
 
 
 #### People
+
+Nicholas Hudeck
+<br>nicholas.hudeck@case.edu
+
+
+
 Dr. Wyatt Newman (Instructor)
 <br>wsn@case.edu
 
