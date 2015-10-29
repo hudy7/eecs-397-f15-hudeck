@@ -9,9 +9,9 @@ using namespace std;
 //7-dof vector
 #define VECTOR_DIM 7 
 
-void doneCallBack(const actionlib::SimpleClientGoalState& state, const my_interesting_moves::trajResultConstPtr& result){
+//void doneCallBack(const actionlib::SimpleClientGoalState& state, const my_interesting_moves::trajResultConstPtr& result){
 
-}
+//}
 
 
 int main(int argc, char** argv) {
@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
         
 
         //this is where you instantiate a new right arm move by passing in a node handle
-        My_interesting_moves right_arm_moves(&nh);
+        Right_arm_moves right_arm_moves(&nh);
 
         cout<<"Starting call backs"<<endl;
 
@@ -55,11 +55,11 @@ int main(int argc, char** argv) {
 	    cout << "stuffing traj: " << endl;
     	right_arm_moves.stuff_trajectory(des_path, des_trajectory); //convert from vector of 7dof poses to trajectory message        
         // here is a "goal" object compatible with the server, as defined in example_action_server/action
-        right_arm_moves::trajGoal goal; 
+        Right_arm_moves::trajGoal goal; 
         // does this work?  copy traj to goal:
         goal.trajectory = des_trajectory;
         
-        actionlib::SimpleActionClient<right_arm_moves::trajAction> action_client("trajActionServer", true);
+        actionlib::SimpleActionClient<Right_arm_moves::trajAction> action_client("trajActionServer", true);
         
         // attempt to connect to the server:
         ROS_INFO("waiting for server: ");

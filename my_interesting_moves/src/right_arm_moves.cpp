@@ -1,7 +1,7 @@
 //Author: Nicholas Hudeck
 //Date: Oct 25 2015
 
-#include <right_arm_moves/right_arm_moves.h>
+#include <my_interesting_moves/right_arm_moves.h>
 
 
 
@@ -11,48 +11,48 @@ vector<string> joint_names;
 vector<int> ra_joint_indices;
 
 
-My_interesting_moves::Right_arm_moves(ros::NodeHandle* nodehandle){
+Right_arm_moves::Right_arm_moves(ros::NodeHandle* nodehandle){
 
   initializeSubscribers();
   initializePublishers();
 
-  right_cmd.mode = 1;
+  right_cmd_.mode = 1;
 
   //definition of joint angles for all 6 joints from shoulder to wrist
-  right_cmd.names.push_back("right_s0");
-  right_cmd.names.push_back("right_s1");
-  right_cmd.names.push_back("right_e0");
-  right_cmd.names.push_back("right_e1");
-  right_cmd.names.push_back("right_w0");
-  right_cmd.names.push_back("right_w1");
-  right_cmd.names.push_back("right_w2");
+  right_cmd_.names.push_back("right_s0");
+  right_cmd_.names.push_back("right_s1");
+  right_cmd_.names.push_back("right_e0");
+  right_cmd_.names.push_back("right_e1");
+  right_cmd_.names.push_back("right_w0");
+  right_cmd_.names.push_back("right_w1");
+  right_cmd_.names.push_back("right_w2");
 
 
   //establishing desired vector size with valid joint angles
   for(int i = 0; i < 7; i++){
-     right_cmd.command.push_back(0.0);		  	
+     right_cmd_.command.push_back(0.0);		  	
   }
 
 
-  constraint<<q0dotmax,q1dotmax,q2dotmax,q3dotmax,q4dotmax,q5dotmax,q6dotmax;
-  constraint *= SPEED_SCALE_FACTOR; //not sure what this part does
+  qdot_max_vec_<<q0dotmax,q1dotmax,q2dotmax,q3dotmax,q4dotmax,q5dotmax,q6dotmax;
+  qdot_max_vec_ *= SPEED_SCALE_FACTOR; //not sure what this part does
 
   traj_interp_stat_client_ = nh_.serviceClient<cwru_srv::simple_bool_service_message>("trajInterpStatusSvc");
 
 }
 
-void My_interesting_moves::initializeSubscribers(){
+void Right_arm_moves::initializeSubscribers(){
 	ROS_INFO("Initialization of Subscribers:");
-	joint_state_pub = nh_.serviceClient("robot/joint_states", 1, &My_interesting_moves::jointStatesCb,this);
+	joint_state_sub_ = nh_.subscribe("robot/joint_states", 1, &Right_arm_moves::jointStatesCb, this);
 }
 
-void My_interesting_moves::initializePublishers(){
+void Right_arm_moves::initializePublishers(){
 	ROS_INFO("Initialization of Publishers:");
 	joint_cmd_pub_right_ = nh_.advertise<baxter_core_msgs::JointCommand>("/robot/limb/right/joint_command", 1, true); 
 	right_traj_pub_ = nh_.advertise<trajectory_msgs::JointTrajectory>("right_arm_joint_path_command", 1); 
 }
 
-void My_interesting_moves::map_right_arm_joint_indices(vector<string> joint_names){
+void Right_arm_moves::map_right_arm_joint_indices(vector<string> joint_names){
 	vector<string> rt_limb_jnt_names;
 
 	ra_joint_indices.clear();
@@ -106,9 +106,29 @@ void My_interesting_moves::map_right_arm_joint_indices(vector<string> joint_name
 
 }
 
+//NOTE: this is not separately threaded.  this callback only responds with the parent node allows a ros spin.
+void Right_arm_moves::jointStatesCb(const sensor_msgs::JointState& js_msg) {
+    joint_states_ = js_msg; // copy this to member var
+    if (ra_joint_indices.size()<1) {
+       //g_all_jnt_names = js_msg.name;
+       map_right_arm_joint_indices(js_msg.name);
+    }
+    // copy right-arm angles to global vec
+    for (int i=0;i<7;i++)
+    {
+        // should do this better; manually remap from joint_states indices to right-arm joint angles
+        q_vec_right_arm_[i] = js_msg.position[ra_joint_indices[i]]; //w2         
+    }
+    //cout<<"CB: q_vec_right_arm: "<<q_vec_right_arm_.transpose()<<endl;
+    
+}  
+
+Vectorq7x1 Right_arm_moves::get_qvec_right_arm() {
+    return q_vec_right_arm_;
+}
 
 
-void My_interesting_moves::stuff_trajectory(std::vector<Eigen::VectorXd> qvecs, trajectory_msgs::JointTrajectory &new_trajectory) {
+void Right_arm_moves::stuff_trajectory(std::vector<Eigen::VectorXd> qvecs, trajectory_msgs::JointTrajectory &new_trajectory) {
     //new_trajectory.clear();
     trajectory_msgs::JointTrajectoryPoint trajectory_point1;
     //trajectory_msgs::JointTrajectoryPoint trajectory_point2; 
@@ -172,16 +192,16 @@ void My_interesting_moves::stuff_trajectory(std::vector<Eigen::VectorXd> qvecs, 
 }  
 
 
-void My_interesting_moves::cmd_pose_right(Vector7x1 qvec){
+void Right_arm_moves::cmd_pose_right(Vectorq7x1 qvec){
 
 	for(int i = 0; i<7; i++){
-		right_cmd.command[i] = qvec[i];
+		right_cmd_.command[i] = qvec[i];
 	}
 
-	joint_cmd_pub_right_.publish(right_cmd);
+	joint_cmd_pub_right_.publish(right_cmd_);
 }
 
-void My_interesting_moves::pub_right_arm_trajectory_init() {
+void Right_arm_moves::pub_right_arm_trajectory_init() {
     std::vector<Vectorq7x1> qvecs;
     
     trajectory_msgs::JointTrajectory new_trajectory;

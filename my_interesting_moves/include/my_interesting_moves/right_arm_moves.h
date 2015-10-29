@@ -41,10 +41,10 @@ const double dt_traj = 0.01; // time step for trajectory interpolation
 const double SPEED_SCALE_FACTOR= 0.5; // go this fraction of speed from above maxes
 
 
-class RightArmMoves {
+class Right_arm_moves {
 	
 	public: 
-		RightArmMoves(ros::NodeHandle* nodehandle);
+		Right_arm_moves(ros::NodeHandle* nodehandle);
 
 		void cmd_pose_right(Vectorq7x1 qvec);
 
@@ -54,7 +54,8 @@ class RightArmMoves {
 
     	void pub_right_arm_trajectory(trajectory_msgs::JointTrajectory &new_trajectory);
     	
-    	Vectorq7x1 get_qvec_right_arm();  
+    	
+    	Vectorq7x1 get_qvec_right_arm();
     	
     	void pub_right_arm_trajectory_init();
     	
@@ -74,17 +75,17 @@ class RightArmMoves {
 
 		ros::Publisher right_traj_pub_;
 
-		double val_from_subscriber;
-		double val_to_remember;
+		double val_from_subscriber_;
+		double val_to_remember_;
 
-		Vectorq7x1 vector_right_arm;
-		Vectorq7x1 constraint;
+		Vectorq7x1 q_vec_right_arm_;
+		Vectorq7x1 qdot_max_vec_;
 
 		sensor_msgs::JointState joint_states_;
-		baxter_core_msgs::JointCommand right_cmd;
-		baxter_core_msgs::JointCommand left_cmd;
+		baxter_core_msgs::JointCommand right_cmd_;
+		baxter_core_msgs::JointCommand left_cmd_;
 
-		cwru_srv::simple_bool_service_message traj_status;
+		cwru_srv::simple_bool_service_message traj_status_srv_;
 
 		//member methods:
 		void initializeSubscribers(); // we will define some helper methods to encapsulate the gory details of initializing subscribers, publishers and services
@@ -94,7 +95,7 @@ class RightArmMoves {
 	    void map_right_arm_joint_indices(vector<string> joint_names);
 
 	    double transition_time(Vectorq7x1 dqvec_time);
-	    double transition_time(Eigen::Vectorq7x1 dqvec_time);
+	    double transition_time(Eigen::VectorXd dqvec_time);
 };
 
 #endif

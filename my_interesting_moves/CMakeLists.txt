@@ -72,7 +72,7 @@ include_directories(
 
 ## Declare a cpp executable
 
-add_executable(traj_interpolator_as src/traj_interpolator_as.cpp)
+#add_executable(traj_interpolator_as src/traj_interpolator_as.cpp)
 
 add_executable(baxter_flex src/baxter_flex.cpp)
 
@@ -92,9 +92,9 @@ add_dependencies(traj_interpolator_as baxter_traj_streamer_generate_messages_cpp
 #target_link_libraries(elbow_orbit_plan_main baxter_traj_streamer  ${catkin_LIBRARIES})
 #target_link_libraries(elbow_orbit_plan_main2 baxter_traj_streamer  ${catkin_LIBRARIES})
 #target_link_libraries(test_init_cmd baxter_traj_streamer  ${catkin_LIBRARIES})
-target_link_libraries(traj_interpolator_as baxter_traj_streamer  ${catkin_LIBRARIES})
+#target_link_libraries(traj_interpolator_as baxter_traj_streamer  ${catkin_LIBRARIES})
 #target_link_libraries(traj_action_client  ${catkin_LIBRARIES})
-target_link_libraries(traj_action_client_pre_pose baxter_traj_streamer ${catkin_LIBRARIES})
+#target_link_libraries(traj_action_client_pre_pose baxter_traj_streamer ${catkin_LIBRARIES})
 #cwru_joint_space_planner
 
 add_dependencies(my_interesting_moves baxter_core_msgs_gencpp)
