@@ -1,17 +1,20 @@
 #include <ros/ros.h>
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
-#include <my_interesting_moves/right_arm_moves.h>
-#include <my_interesting_moves/trajAction.h>
+#include <baxter_traj_streamer/baxter_traj_streamer.h>
+#include <baxter_traj_streamer/trajAction.h>
 
 using namespace std;
 
 //7-dof vector
 #define VECTOR_DIM 7 
 
-//void doneCallBack(const actionlib::SimpleClientGoalState& state, const my_interesting_moves::trajResultConstPtr& result){
 
-//}
+void doneCb(const actionlib::SimpleClientGoalState& state,
+        const baxter_traj_streamer::trajResultConstPtr& result) {
+    ROS_INFO(" doneCb: server responded with state [%s]", state.toString().c_str());
+    ROS_INFO("got return val = %d; traj_id = %d",result->return_val,result->traj_id);
+}
 
 
 int main(int argc, char** argv) {
@@ -35,7 +38,7 @@ int main(int argc, char** argv) {
         
 
         //this is where you instantiate a new right arm move by passing in a node handle
-        Right_arm_moves right_arm_moves(&nh);
+        Baxter_traj_streamer baxter_traj_streamer(&nh);
 
         cout<<"Starting call backs"<<endl;
 
@@ -45,7 +48,7 @@ int main(int argc, char** argv) {
        	}
 
        	cout<<"getting current right-arm pose:"<<endl;
-	    q_vec_right_arm =  right_arm_moves.get_qvec_right_arm();  
+	    q_vec_right_arm =  baxter_traj_streamer.get_qvec_right_arm();  
 	    cout<<"r_arm state:"<<q_vec_right_arm.transpose()<<endl;    
 	    q_in_vecxd = q_vec_right_arm; // start from here;
 	    des_path.push_back(q_in_vecxd); //put all zeros here
@@ -53,13 +56,13 @@ int main(int argc, char** argv) {
 	    des_path.push_back(q_in_vecxd); //twice, to define a trajectory 
 
 	    cout << "stuffing traj: " << endl;
-    	right_arm_moves.stuff_trajectory(des_path, des_trajectory); //convert from vector of 7dof poses to trajectory message        
+    	baxter_traj_streamer.stuff_trajectory(des_path, des_trajectory); //convert from vector of 7dof poses to trajectory message        
         // here is a "goal" object compatible with the server, as defined in example_action_server/action
-        Right_arm_moves::trajGoal goal; 
+        baxter_traj_streamer::trajGoal goal; 
         // does this work?  copy traj to goal:
         goal.trajectory = des_trajectory;
         
-        actionlib::SimpleActionClient<Right_arm_moves::trajAction> action_client("trajActionServer", true);
+        actionlib::SimpleActionClient<baxter_traj_streamer::trajAction> action_client("trajActionServer", true);
         
         // attempt to connect to the server:
         ROS_INFO("waiting for server: ");
