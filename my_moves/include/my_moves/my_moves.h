@@ -34,15 +34,15 @@ const double dt_traj = 0.01; // time step for trajectory interpolation
 const double SPEED_SCALE_FACTOR= 0.5; // go this fraction of speed from above maxes
 */
 
-class MyMoves{
+class My_moves{
 
 public:
-	MyMoves(ros::NodeHandle* nodehandle);
+	My_moves(ros::NodeHandle* nodehandle);
 	void goToPose(Vectorq7x1 qvec);
-	Vectorq7x1 wave();/*trajectory_msgs::JointTrajectory &des_trajectory);
+	Vectorq7x1 wave(trajectory_msgs::JointTrajectory &des_trajectory);
 	Vectorq7x1 flex(trajectory_msgs::JointTrajectory &des_trajectory);
 	Vectorq7x1 salute(trajectory_msgs::JointTrajectory &des_trajectory);
-*/
+
 private:
 	ros::NodeHandle nh_;
 

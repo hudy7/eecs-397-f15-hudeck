@@ -7,7 +7,7 @@ int main(int argc, char** argv){
 
 	ros::NodeHandle nh;
 
-	MyMoves m(&nh);
+	My_moves m(&nh);
 	//Vectorq7x1 wavePose = m.wave();
 	//m.goToPose(wavePose);
 

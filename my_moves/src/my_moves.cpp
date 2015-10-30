@@ -1,14 +1,15 @@
 #include <ros/ros.h>
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
-#include <my_moves/my_moves.h>
+
 #include <baxter_traj_streamer/baxter_traj_streamer.h>
 #include <baxter_traj_streamer/trajAction.h>
+#include <my_moves/my_moves.h>
 using namespace std;
 
 #define VECTOR_DIM 7 //7-dof vector
 
-MyMoves::MyMoves(ros::NodeHandle* nodehandle){};
+My_moves::My_moves(ros::NodeHandle* nodehandle){};
 
 void doneCb(const actionlib::SimpleClientGoalState& state,
         const baxter_traj_streamer::trajResultConstPtr& result) {
