@@ -37,7 +37,7 @@ const double SPEED_SCALE_FACTOR= 0.5; // go this fraction of speed from above ma
 class My_moves{
 
 public:
-	My_moves(ros::NodeHandle* nodehandle);
+	My_moves();
 	void goToPose(Vectorq7x1 qvec);
 	Vectorq7x1 wave(trajectory_msgs::JointTrajectory &des_trajectory);
 	Vectorq7x1 flex(trajectory_msgs::JointTrajectory &des_trajectory);

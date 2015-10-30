@@ -5,9 +5,9 @@ using namespace std;
 int main(int argc, char** argv){
 	//ros::init(argc,argv,"traj_action_client_node");
 
-	ros::NodeHandle nh;
+	ros::NodeHandle* nh;
 
-	My_moves m(&nh);
+	My_moves move();
 	//Vectorq7x1 wavePose = m.wave();
 	//m.goToPose(wavePose);
 

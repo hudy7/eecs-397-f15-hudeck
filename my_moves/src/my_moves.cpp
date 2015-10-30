@@ -9,7 +9,7 @@ using namespace std;
 
 #define VECTOR_DIM 7 //7-dof vector
 
-My_moves::My_moves(ros::NodeHandle* nodehandle){};
+My_moves::My_moves(){};
 
 void doneCb(const actionlib::SimpleClientGoalState& state,
         const baxter_traj_streamer::trajResultConstPtr& result) {
