@@ -8,6 +8,8 @@ using namespace std;
 
 #define VECTOR_DIM 7 //7-dof vector
 
+MyMoves::MyMoves(ros::NodeHandle* nodehandle){};
+
 void doneCb(const actionlib::SimpleClientGoalState& state,
         const baxter_traj_streamer::trajResultConstPtr& result) {
     ROS_INFO(" doneCb: server responded with state [%s]", state.toString().c_str());

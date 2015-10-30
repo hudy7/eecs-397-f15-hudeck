@@ -31,6 +31,11 @@ catkin_package(
 
 catkin_simple()
 
+add_definitions(${EIGEN_DEFINITIONS})
+
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+
+
 # example boost usage
 find_package(Boost REQUIRED COMPONENTS system thread)
 

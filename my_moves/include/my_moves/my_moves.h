@@ -39,10 +39,10 @@ class MyMoves{
 public:
 	MyMoves(ros::NodeHandle* nodehandle);
 	void goToPose(Vectorq7x1 qvec);
-	Vectorq7x1 wave(trajectory_msgs::JointTrajectory &des_trajectory);
+	Vectorq7x1 wave();/*trajectory_msgs::JointTrajectory &des_trajectory);
 	Vectorq7x1 flex(trajectory_msgs::JointTrajectory &des_trajectory);
 	Vectorq7x1 salute(trajectory_msgs::JointTrajectory &des_trajectory);
-
+*/
 private:
 	ros::NodeHandle nh_;
 

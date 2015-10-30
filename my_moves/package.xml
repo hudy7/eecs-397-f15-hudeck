@@ -62,6 +62,8 @@
    <build_depend>actionlib_msgs</build_depend>
    <build_depend>actionlib</build_depend> 
   <build_depend>baxter_traj_streamer</build_depend>
+
+
   <run_depend>Eigen</run_depend>
   <run_depend>baxter_core_msgs</run_depend>
   <run_depend>roscpp</run_depend>
