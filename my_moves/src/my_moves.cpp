@@ -6,10 +6,11 @@
 #include <baxter_traj_streamer/trajAction.h>
 #include <my_moves/my_moves.h>
 using namespace std;
-
+typedef Eigen::Matrix<double,7,1> Vectorq7x1;
 #define VECTOR_DIM 7 //7-dof vector
 
 My_moves::My_moves(){};
+
 
 void doneCb(const actionlib::SimpleClientGoalState& state,
         const baxter_traj_streamer::trajResultConstPtr& result) {
@@ -18,15 +19,16 @@ void doneCb(const actionlib::SimpleClientGoalState& state,
 }
 
 
-void goToPose(Vectorq7x1 pose){
+void My_moves::goToPose(Vectorq7x1 pose){
 	ros::NodeHandle nh;
 
-	Baxter_traj_streamer baxter_traj_streamer(&nh);
+	Vectorq7x1 p = pose;
+	
 	Eigen::VectorXd q_in_vecxd;
 	Vectorq7x1 q_vec_right_arm;
 	std::vector<Eigen::VectorXd> des_path;
 	trajectory_msgs::JointTrajectory des_trajectory; //empty trajectory
-
+	Baxter_traj_streamer baxter_traj_streamer(&nh);
 
 	cout<<"Warm up call backs";
 	for(int i = 0; i<100; i++){
@@ -41,7 +43,7 @@ void goToPose(Vectorq7x1 pose){
 
 	q_in_vecxd = q_vec_right_arm;
 	des_path.push_back(q_in_vecxd);
-	q_in_vecxd = pose;
+	q_in_vecxd = p;
 	des_path.push_back(q_in_vecxd);
 
 	cout<< "Stuffing the trajectory in baxter_traj_streamer:";
@@ -63,16 +65,24 @@ void goToPose(Vectorq7x1 pose){
 
 }
 
-Vectorq7x1 wave(trajectory_msgs::JointTrajectory &des_trajectory){
-	Vectorq7x1 wave;
-	wave<<-1.01, .62,   0,    1.993,    3.5,   2,  0;
-}
 
+//baxter lifts right arm toward waving motion
+Vectorq7x1 My_moves::wave(){
+	Vectorq7x1 w;
+	w<<-1.01, -.5 , 2, 1.993, 1.6,   2,  0;
+	return w;
 
+};
 	
+Vectorq7x1 My_moves::raiseHand(){
+	Vectorq7x1 f;
+	f<< -1.08, -1.5 , 2, -1.993, 1.6,   2,  1.7;
+	return f;
+};
 
+Vectorq7x1 My_moves::slapBeerOffTable(){
+	Vectorq7x1 s;
+	s << 1,1,1,1,1,1,1;
+	return s;
 
-
-
-Vectorq7x1 flex(trajectory_msgs::JointTrajectory &des_trajectory);
-Vectorq7x1 salute(trajectory_msgs::JointTrajectory &des_trajectory);
+}

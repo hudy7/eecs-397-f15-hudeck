@@ -5,15 +5,22 @@
 using namespace std;
 
 int main(int argc, char** argv){
-	//ros::init(argc,argv,"traj_action_client_node");
+	ros::init(argc,argv,"traj_action_client_node");
 
 	ros::NodeHandle* nh;
 
 	My_moves m;
 	//Vectorq7x1 v = m.wave();
-	//m.goToPose(v);
 
 
+	m.goToPose(m.raiseHand());
+
+	ros::Duration(2.5);
+	
+	m.goToPose(m.wave());
 
 
+	ros::Duration(1.0);
+
+	m.goToPose(m.slapBeerOffTable());
 }
