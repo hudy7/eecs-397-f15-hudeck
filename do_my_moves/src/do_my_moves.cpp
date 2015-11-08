@@ -16,6 +16,7 @@ int main(int argc, char** argv)
 
   m.goToPose(m.raiseHand());
 
+/*
   ros::Duration(2.5);
 
   m.goToPose(m.wave());
@@ -23,4 +24,5 @@ int main(int argc, char** argv)
   ros::Duration(1.0);
 
   m.goToPose(m.slapBeerOffTable());
+*/
 }
