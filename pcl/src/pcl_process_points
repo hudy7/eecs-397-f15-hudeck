@@ -19,6 +19,7 @@
 #include <pcl_ros/transforms.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl-1.7/pcl/impl/point_types.hpp>
+#include <cwru_pcl_utils/cwru_pcl_utils.h>
 //#include <pcl/common/impl/centroid.hpp>
 
 
@@ -44,6 +45,14 @@ void kinectCB(const sensor_msgs::PointCloud2ConstPtr& cloud) {
     g_got_cloud=true; //cue to "main" that callback received and saved a pointcloud
 
 }
+
+void searchThroughPoints(){
+    CwruPclUtils::fit_points_to_plane(g_pclKinect, Eigen::Vector3f &plane_normal, double &plane_dist)
+
+}
+
+
+
 
 int main(int argc, char** argv) {
     // Do some initialization here
