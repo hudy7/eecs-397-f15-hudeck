@@ -16,11 +16,12 @@ catkin_simple()
 
 # Libraries
 # cs_add_library(my_lib src/my_lib.cpp)   
+cs_add_library(coplanar_utils src/coplanar_utils.cpp)
 
 # Executables
-cs_add_executable(coplanar_ps7 src/coplanar_ps7.cpp)
+#cs_add_executable(coplanar_ps7 src/coplanar_ps7.cpp)
 #target_link_libraries(find_coplanar_points cwru_pcl_utils ${catkin_LIBRARIES})
-target_link_libraries(coplanar_ps7 coplanar_utils ${catkin_LIBRARIES})
+#target_link_libraries(coplanar_ps7 coplanar_utils ${catkin_LIBRARIES})
 
 cs_install()
 cs_export()

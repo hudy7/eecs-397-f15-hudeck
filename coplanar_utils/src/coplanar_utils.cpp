@@ -246,7 +246,7 @@ void CoplanarUtils::example_pcl_operation() {
     }    
 }
 
-void CoplanarUtils::find_coplanar_points() {
+void CoplanarUtils::find_coplanar() {
     Eigen::Vector3f centroid;
     centroid = compute_centroid(pclTransformedSelectedPoints_ptr_);
 
