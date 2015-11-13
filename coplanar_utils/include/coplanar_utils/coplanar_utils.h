@@ -50,8 +50,8 @@ public:
 
 
     void fit_points_to_plane(Eigen::MatrixXf points_array, 
-        Eigen::Vector3f &plane_normal, 
-        double &plane_dist); 
+    Eigen::Vector3f &plane_normal, 
+    double &plane_dist); 
     Eigen::Vector3f compute_centroid(pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud_ptr);
     
     void fit_points_to_plane(pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud_ptr,Eigen::Vector3f &plane_normal, double &plane_dist);
@@ -62,7 +62,7 @@ public:
     void transform_kinect_cloud(Eigen::Affine3f A);
     void transform_selected_points_cloud(Eigen::Affine3f A);
     void transform_cloud(Eigen::Affine3f A,pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud_ptr, 
-        pcl::PointCloud<pcl::PointXYZ>::Ptr output_cloud_ptr);    
+    pcl::PointCloud<pcl::PointXYZ>::Ptr output_cloud_ptr);    
     void reset_got_kinect_cloud() {got_kinect_cloud_= false;};
     void reset_got_selected_points() {got_selected_points_= false;};    
     bool got_kinect_cloud() { return got_kinect_cloud_; };
@@ -75,6 +75,8 @@ public:
     void copy_cloud(PointCloud<pcl::PointXYZ>::Ptr inputCloud, PointCloud<pcl::PointXYZ>::Ptr outputCloud); 
     void get_gen_purpose_cloud(pcl::PointCloud<pcl::PointXYZ> & outputCloud );    
     void example_pcl_operation();
+    
+    //new function added by Nick Hudeck
     void find_coplanar();
     
 private:

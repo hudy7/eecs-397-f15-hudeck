@@ -1,8 +1,15 @@
-// cwru_pcl_utils: a  ROS library to illustrate use of PCL, including some handy utility functions
+// coplanar_utils: a  ROS library to illustrate use of PCL, including some handy utility functions
 //
 
 #include <coplanar_utils/coplanar_utils.h>
-//uses initializer list for member vars
+
+
+/**
+All of this code is copied from cwru_pcl_utils
+Author: @wyatt newman
+
+I did not create these functions
+*/
 
 CoplanarUtils::CoplanarUtils(ros::NodeHandle* nodehandle) : nh_(*nodehandle), pclKinect_ptr_(new PointCloud<pcl::PointXYZ>),
         pclKinect_clr_ptr_(new PointCloud<pcl::PointXYZRGB>),
@@ -13,9 +20,6 @@ CoplanarUtils::CoplanarUtils(ros::NodeHandle* nodehandle) : nh_(*nodehandle), pc
     	got_kinect_cloud_ = false;
     	got_selected_points_ = false;
 }
-
-
-
 
 void CoplanarUtils::fit_points_to_plane(Eigen::MatrixXf points_mat, Eigen::Vector3f &plane_normal, double &plane_dist) {
     //ROS_INFO("starting identification of plane from data: ");
@@ -49,23 +53,10 @@ void CoplanarUtils::fit_points_to_plane(Eigen::MatrixXf points_mat, Eigen::Vecto
     Eigen::EigenSolver<Eigen::Matrix3f> es3f(CoVar);
 
     Eigen::VectorXf evals; //we'll extract the eigenvalues to here
-    //cout<<"size of evals: "<<es3d.eigenvalues().size()<<endl;
-    //cout<<"rows,cols = "<<es3d.eigenvalues().rows()<<", "<<es3d.eigenvalues().cols()<<endl;
-    //cout << "The eigenvalues of CoVar are:" << endl << es3d.eigenvalues().transpose() << endl;
-    //cout<<"(these should be real numbers, and one of them should be zero)"<<endl;
-    //cout << "The matrix of eigenvectors, V, is:" << endl;
-    //cout<< es3d.eigenvectors() << endl << endl;
-    //cout<< "(these should be real-valued vectors)"<<endl;
-    // in general, the eigenvalues/eigenvectors can be complex numbers
-    //however, since our matrix is self-adjoint (symmetric, positive semi-definite), we expect
-    // real-valued evals/evecs;  we'll need to strip off the real parts of the solution
+  
 
     evals = es3f.eigenvalues().real(); // grab just the real parts
-    //cout<<"real parts of evals: "<<evals.transpose()<<endl;
-
-    // our solution should correspond to an e-val of zero, which will be the minimum eval
-    //  (all other evals for the covariance matrix will be >0)
-    // however, the solution does not order the evals, so we'll have to find the one of interest ourselves
+  
 
     double min_lambda = evals[0]; //initialize the hunt for min eval
     Eigen::Vector3cf complex_vec; // here is a 3x1 vector of double-precision, complex numbers
@@ -88,21 +79,8 @@ void CoplanarUtils::fit_points_to_plane(Eigen::MatrixXf points_mat, Eigen::Vecto
             plane_normal = es3f.eigenvectors().col(ivec).real();
         }
     }
-    // at this point, we have the minimum eval in "min_lambda", and the plane normal
-    // (corresponding evec) in "est_plane_normal"/
-    // these correspond to the ith entry of i_normal
-    //cout<<"min eval is "<<min_lambda<<", corresponding to component "<<i_normal<<endl;
-    //cout<<"corresponding evec (est plane normal): "<<est_plane_normal.transpose()<<endl;
-    //cout<<"correct answer is: "<<normal_vec.transpose()<<endl;
-    plane_dist = plane_normal.dot(centroid);
-    //cout<<"est plane distance from origin = "<<est_dist<<endl;
-    //cout<<"correct answer is: "<<dist<<endl;
-    //cout<<endl<<endl;    
-
+    plane_dist = plane_normal.dot(centroid); 
 }
-
-//get pts from cloud, pack the points into an Eigen::MatrixXf, then use above
-// fit_points_to_plane fnc
 
 void CoplanarUtils::fit_points_to_plane(pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud_ptr, Eigen::Vector3f &plane_normal, double &plane_dist) {
     Eigen::MatrixXf points_mat;
@@ -121,7 +99,6 @@ void CoplanarUtils::fit_points_to_plane(pcl::PointCloud<pcl::PointXYZ>::Ptr inpu
 
 }
 
-//compute and return the centroid of a pointCloud
 Eigen::Vector3f CoplanarUtils::compute_centroid(pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud_ptr) {
     Eigen::Vector3f centroid;
     Eigen::Vector3f cloud_pt;
@@ -136,8 +113,6 @@ Eigen::Vector3f CoplanarUtils::compute_centroid(pcl::PointCloud<pcl::PointXYZ>::
     centroid /= npts; //divide by the number of points to get the centroid
     return centroid;
 }
-
-// this fnc operates on transformed selected points
 
 void CoplanarUtils::fit_xformed_selected_pts_to_plane(Eigen::Vector3f &plane_normal, double &plane_dist) {
     fit_points_to_plane(pclTransformedSelectedPoints_ptr_, plane_normal, plane_dist);
@@ -173,34 +148,13 @@ Eigen::Affine3f CoplanarUtils::transformTFToEigen(const tf::Transform &t) {
     return e;
 }
 
-/**here is a function that transforms a cloud of points into an alternative frame;
- * it assumes use of pclKinect_ptr_ from kinect sensor as input, to pclTransformed_ptr_ , the cloud in output frame
- * 
- * @param A [in] supply an Eigen::Affine3f, such that output_points = A*input_points
- */
 void CoplanarUtils::transform_kinect_cloud(Eigen::Affine3f A) {
-    transform_cloud(A, pclKinect_ptr_, pclTransformed_ptr_);
-    /*
-    pclTransformed_ptr_->header = pclKinect_ptr_->header;
-    pclTransformed_ptr_->is_dense = pclKinect_ptr_->is_dense;
-    pclTransformed_ptr_->width = pclKinect_ptr_->width;
-    pclTransformed_ptr_->height = pclKinect_ptr_->height;
-    int npts = pclKinect_ptr_->points.size();
-    cout << "transforming npts = " << npts << endl;
-    pclTransformed_ptr_->points.resize(npts);
-
-    //somewhat odd notation: getVector3fMap() reading OR WRITING points from/to a pointcloud, with conversions to/from Eigen
-    for (int i = 0; i < npts; ++i) {
-        pclTransformed_ptr_->points[i].getVector3fMap() = A * pclKinect_ptr_->points[i].getVector3fMap(); 
-    }    
-     * */
+    transform_cloud(A, pclKinect_ptr_, pclTransformed_ptr_);   
 }
 
 void CoplanarUtils::transform_selected_points_cloud(Eigen::Affine3f A) {
     transform_cloud(A, pclSelectedPoints_ptr_, pclTransformedSelectedPoints_ptr_);
 }
-
-//    void get_transformed_selected_points(pcl::PointCloud<pcl::PointXYZ> & outputCloud );
 
 void CoplanarUtils::get_transformed_selected_points(pcl::PointCloud<pcl::PointXYZ> & outputCloud ) {
     int npts = pclTransformedSelectedPoints_ptr_->points.size(); //how many points to extract?
@@ -245,25 +199,6 @@ void CoplanarUtils::example_pcl_operation() {
         pclGenPurposeCloud_ptr_->points[i].getVector3fMap() = pclGenPurposeCloud_ptr_->points[i].getVector3fMap()+offset;   
     }    
 }
-
-void CoplanarUtils::find_coplanar() {
-    Eigen::Vector3f centroid;
-    centroid = compute_centroid(pclTransformedSelectedPoints_ptr_);
-
-    int npts = pclTransformed_ptr_->points.size();
-    ROS_INFO_STREAM("There are " << npts << " points.\n");
-
-    pclGenPurposeCloud_ptr_->points.resize(npts);
-
-    pclGenPurposeCloud_ptr_->points.clear();
-
-    for(int i = 0; i < npts; ++i){
-        if(((centroid[2] - 0.05) < (pclTransformed_ptr_->points[i].getVector3fMap()[2])) && ((pclTransformed_ptr_->points[i].getVector3fMap()[2]) < (centroid[2] + 0.05))) {
-            pclGenPurposeCloud_ptr_->points.push_back(pclTransformed_ptr_->points[i]);
-        }
-    }
-}
-
 
 //generic function to copy an input cloud to an output cloud
 // provide pointers to the two clouds
@@ -351,4 +286,51 @@ void CoplanarUtils::selectCB(const sensor_msgs::PointCloud2ConstPtr& cloud) {
     pcl::fromROSMsg(*cloud, *pclSelectedPoints_ptr_);
     ROS_INFO("RECEIVED NEW PATCH w/  %d * %d points", pclSelectedPoints_ptr_->width, pclSelectedPoints_ptr_->height);
     got_selected_points_ = true;
+}
+
+
+/**********************************************************************************/
+
+/**
+
+New function added by Nick Hudeck
+
+*/
+
+
+/**
+New function added to find coplanar points from a selected range of points
+
+after transforming selected points with respect to the torso
+and
+utilizing fit_xformed_selected_pts_to_plane
+
+I compute the centroid of the given selected points in : pclTransformedSelectedPoints_ptr_
+
+The function resizes them to make sure the point cloud is a suitable size
+
+
+*/
+
+void CoplanarUtils::find_coplanar() {
+
+    Eigen::Vector3f centroid;
+    pt_cloud_to_test = compute_centroid(pclTransformedSelectedPoints_ptr_);
+    int npts = pclTransformed_ptr_->points.size();
+    pclGenPurposeCloud_ptr_->points.resize(npts);
+    pclGenPurposeCloud_ptr_->points.clear();
+
+    //the tolerance that the points can be within to be added by using a push_back
+    double tolerance = 0.07;
+
+    //iterates through points in pclTransformed_ptr_ located at the z coordinate
+    for(int i = 0; i < npts; ++i){
+    	//test if the z coordinate ("pt_cloud_to_test[2]") is within the bounds
+        if(((pt_cloud_to_test[2] - tolerance) < (pclTransformed_ptr_->points[i].getVector3fMap()[2])) 
+        	&& ((pclTransformed_ptr_->points[i].getVector3fMap()[2]) < (pt_cloud_to_test[2] + tolerance))) 
+
+        {
+            pclGenPurposeCloud_ptr_->points.push_back(pclTransformed_ptr_->points[i]);
+        }
+    }
 }
