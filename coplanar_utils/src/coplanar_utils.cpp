@@ -1,23 +1,23 @@
 // cwru_pcl_utils: a  ROS library to illustrate use of PCL, including some handy utility functions
 //
 
-#include <eet12_pcl_utils/eet12_pcl_utils.h>
+#include <coplanar_utils/coplanar_utils.h>
 //uses initializer list for member vars
 
-EET12PclUtils::EET12PclUtils(ros::NodeHandle* nodehandle) : nh_(*nodehandle), pclKinect_ptr_(new PointCloud<pcl::PointXYZ>),
+CoplanarUtils::CoplanarUtils(ros::NodeHandle* nodehandle) : nh_(*nodehandle), pclKinect_ptr_(new PointCloud<pcl::PointXYZ>),
         pclKinect_clr_ptr_(new PointCloud<pcl::PointXYZRGB>),
-pclTransformed_ptr_(new PointCloud<pcl::PointXYZ>), pclSelectedPoints_ptr_(new PointCloud<pcl::PointXYZ>),
-pclTransformedSelectedPoints_ptr_(new PointCloud<pcl::PointXYZ>),pclGenPurposeCloud_ptr_(new PointCloud<pcl::PointXYZ>) {
-    initializeSubscribers();
-    initializePublishers();
-    got_kinect_cloud_ = false;
-    got_selected_points_ = false;
+		pclTransformed_ptr_(new PointCloud<pcl::PointXYZ>), pclSelectedPoints_ptr_(new PointCloud<pcl::PointXYZ>),
+		pclTransformedSelectedPoints_ptr_(new PointCloud<pcl::PointXYZ>),pclGenPurposeCloud_ptr_(new PointCloud<pcl::PointXYZ>) {
+    	initializeSubscribers();
+    	initializePublishers();
+    	got_kinect_cloud_ = false;
+    	got_selected_points_ = false;
 }
 
 
 
 
-void EET12PclUtils::fit_points_to_plane(Eigen::MatrixXf points_mat, Eigen::Vector3f &plane_normal, double &plane_dist) {
+void CoplanarUtils::fit_points_to_plane(Eigen::MatrixXf points_mat, Eigen::Vector3f &plane_normal, double &plane_dist) {
     //ROS_INFO("starting identification of plane from data: ");
     int npts = points_mat.cols(); // number of points = number of columns in matrix; check the size
     
@@ -104,7 +104,7 @@ void EET12PclUtils::fit_points_to_plane(Eigen::MatrixXf points_mat, Eigen::Vecto
 //get pts from cloud, pack the points into an Eigen::MatrixXf, then use above
 // fit_points_to_plane fnc
 
-void EET12PclUtils::fit_points_to_plane(pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud_ptr, Eigen::Vector3f &plane_normal, double &plane_dist) {
+void CoplanarUtils::fit_points_to_plane(pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud_ptr, Eigen::Vector3f &plane_normal, double &plane_dist) {
     Eigen::MatrixXf points_mat;
     Eigen::Vector3f cloud_pt;
     //populate points_mat from cloud data;
@@ -122,7 +122,7 @@ void EET12PclUtils::fit_points_to_plane(pcl::PointCloud<pcl::PointXYZ>::Ptr inpu
 }
 
 //compute and return the centroid of a pointCloud
-Eigen::Vector3f EET12PclUtils::compute_centroid(pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud_ptr) {
+Eigen::Vector3f CoplanarUtils::compute_centroid(pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud_ptr) {
     Eigen::Vector3f centroid;
     Eigen::Vector3f cloud_pt;
     int npts = input_cloud_ptr->points.size();
@@ -139,7 +139,7 @@ Eigen::Vector3f EET12PclUtils::compute_centroid(pcl::PointCloud<pcl::PointXYZ>::
 
 // this fnc operates on transformed selected points
 
-void EET12PclUtils::fit_xformed_selected_pts_to_plane(Eigen::Vector3f &plane_normal, double &plane_dist) {
+void CoplanarUtils::fit_xformed_selected_pts_to_plane(Eigen::Vector3f &plane_normal, double &plane_dist) {
     fit_points_to_plane(pclTransformedSelectedPoints_ptr_, plane_normal, plane_dist);
     Eigen::Vector3f centroid;
     cwru_msgs::PatchParams patch_params_msg;
@@ -157,7 +157,7 @@ void EET12PclUtils::fit_xformed_selected_pts_to_plane(Eigen::Vector3f &plane_nor
     patch_publisher_.publish(patch_params_msg);
 }
 
-Eigen::Affine3f EET12PclUtils::transformTFToEigen(const tf::Transform &t) {
+Eigen::Affine3f CoplanarUtils::transformTFToEigen(const tf::Transform &t) {
     Eigen::Affine3f e;
     // treat the Eigen::Affine as a 4x4 matrix:
     for (int i = 0; i < 3; i++) {
@@ -178,7 +178,7 @@ Eigen::Affine3f EET12PclUtils::transformTFToEigen(const tf::Transform &t) {
  * 
  * @param A [in] supply an Eigen::Affine3f, such that output_points = A*input_points
  */
-void EET12PclUtils::transform_kinect_cloud(Eigen::Affine3f A) {
+void CoplanarUtils::transform_kinect_cloud(Eigen::Affine3f A) {
     transform_cloud(A, pclKinect_ptr_, pclTransformed_ptr_);
     /*
     pclTransformed_ptr_->header = pclKinect_ptr_->header;
@@ -196,13 +196,13 @@ void EET12PclUtils::transform_kinect_cloud(Eigen::Affine3f A) {
      * */
 }
 
-void EET12PclUtils::transform_selected_points_cloud(Eigen::Affine3f A) {
+void CoplanarUtils::transform_selected_points_cloud(Eigen::Affine3f A) {
     transform_cloud(A, pclSelectedPoints_ptr_, pclTransformedSelectedPoints_ptr_);
 }
 
 //    void get_transformed_selected_points(pcl::PointCloud<pcl::PointXYZ> & outputCloud );
 
-void EET12PclUtils::get_transformed_selected_points(pcl::PointCloud<pcl::PointXYZ> & outputCloud ) {
+void CoplanarUtils::get_transformed_selected_points(pcl::PointCloud<pcl::PointXYZ> & outputCloud ) {
     int npts = pclTransformedSelectedPoints_ptr_->points.size(); //how many points to extract?
     outputCloud.header = pclTransformedSelectedPoints_ptr_->header;
     outputCloud.is_dense = pclTransformedSelectedPoints_ptr_->is_dense;
@@ -217,7 +217,7 @@ void EET12PclUtils::get_transformed_selected_points(pcl::PointCloud<pcl::PointXY
 }
 
 //same as above, but for general-purpose cloud
-void EET12PclUtils::get_gen_purpose_cloud(pcl::PointCloud<pcl::PointXYZ> & outputCloud) {
+void CoplanarUtils::get_gen_purpose_cloud(pcl::PointCloud<pcl::PointXYZ> & outputCloud) {
     int npts = pclGenPurposeCloud_ptr_->points.size(); //how many points to extract?
     outputCloud.header = pclGenPurposeCloud_ptr_->header;
     outputCloud.is_dense = pclGenPurposeCloud_ptr_->is_dense;
@@ -236,7 +236,7 @@ void EET12PclUtils::get_gen_purpose_cloud(pcl::PointCloud<pcl::PointXYZ> & outpu
 
 // The operation illustrated here is not all that useful.  It uses transformed, selected points,
 // elevates the data by 5cm, and copies the result to the general-purpose cloud variable
-void EET12PclUtils::example_pcl_operation() {
+void CoplanarUtils::example_pcl_operation() {
     int npts = pclTransformedSelectedPoints_ptr_->points.size(); //number of points
     copy_cloud(pclTransformedSelectedPoints_ptr_,pclGenPurposeCloud_ptr_); //now have a copy of the selected points in gen-purpose object
     Eigen::Vector3f offset;
@@ -246,7 +246,7 @@ void EET12PclUtils::example_pcl_operation() {
     }    
 }
 
-void EET12PclUtils::find_coplanar_points() {
+void CoplanarUtils::find_coplanar_points() {
     Eigen::Vector3f centroid;
     centroid = compute_centroid(pclTransformedSelectedPoints_ptr_);
 
@@ -268,7 +268,7 @@ void EET12PclUtils::find_coplanar_points() {
 //generic function to copy an input cloud to an output cloud
 // provide pointers to the two clouds
 //output cloud will get resized
-void EET12PclUtils::copy_cloud(PointCloud<pcl::PointXYZ>::Ptr inputCloud, PointCloud<pcl::PointXYZ>::Ptr outputCloud) {
+void CoplanarUtils::copy_cloud(PointCloud<pcl::PointXYZ>::Ptr inputCloud, PointCloud<pcl::PointXYZ>::Ptr outputCloud) {
     int npts = inputCloud->points.size(); //how many points to extract?
     outputCloud->header = inputCloud->header;
     outputCloud->is_dense = inputCloud->is_dense;
@@ -284,7 +284,7 @@ void EET12PclUtils::copy_cloud(PointCloud<pcl::PointXYZ>::Ptr inputCloud, PointC
 
 //need to fix this to put proper frame_id in header
 
-void EET12PclUtils::transform_cloud(Eigen::Affine3f A, pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud_ptr,
+void CoplanarUtils::transform_cloud(Eigen::Affine3f A, pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud_ptr,
     pcl::PointCloud<pcl::PointXYZ>::Ptr output_cloud_ptr) {
     output_cloud_ptr->header = input_cloud_ptr->header;
     output_cloud_ptr->is_dense = input_cloud_ptr->is_dense;
@@ -308,19 +308,19 @@ void EET12PclUtils::transform_cloud(Eigen::Affine3f A, pcl::PointCloud<pcl::Poin
 // note odd syntax: &ExampleRosClass::subscriberCallback is a pointer to a member function of ExampleRosClass
 // "this" keyword is required, to refer to the current instance of ExampleRosClass
 
-void EET12PclUtils::initializeSubscribers() {
+void CoplanarUtils::initializeSubscribers() {
     ROS_INFO("Initializing Subscribers");
 
-    pointcloud_subscriber_ = nh_.subscribe("/kinect/depth/points", 1, &EET12PclUtils::kinectCB, this);
+    pointcloud_subscriber_ = nh_.subscribe("/kinect/depth/points", 1, &CoplanarUtils::kinectCB, this);
     // add more subscribers here, as needed
 
     // subscribe to "selected_points", which is published by Rviz tool
-    selected_points_subscriber_ = nh_.subscribe<sensor_msgs::PointCloud2> ("/selected_points", 1, &EET12PclUtils::selectCB, this);
+    selected_points_subscriber_ = nh_.subscribe<sensor_msgs::PointCloud2> ("/selected_points", 1, &CoplanarUtils::selectCB, this);
 }
 
 //member helper function to set up publishers;
 
-void EET12PclUtils::initializePublishers() {
+void CoplanarUtils::initializePublishers() {
     ROS_INFO("Initializing Publishers");
     pointcloud_publisher_ = nh_.advertise<sensor_msgs::PointCloud2>("cwru_pcl_pointcloud", 1, true);
     patch_publisher_ = nh_.advertise<cwru_msgs::PatchParams>("pcl_patch_params", 1, true);
@@ -332,7 +332,7 @@ void EET12PclUtils::initializePublishers() {
  * callback fnc: receives transmissions of Kinect data; if got_kinect_cloud is false, copy current transmission to internal variable
  * @param cloud [in] messages received from Kinect
  */
-void EET12PclUtils::kinectCB(const sensor_msgs::PointCloud2ConstPtr& cloud) {
+void CoplanarUtils::kinectCB(const sensor_msgs::PointCloud2ConstPtr& cloud) {
     //cout<<"callback from kinect pointcloud pub"<<endl;
     // convert/copy the cloud only if desired
     if (!got_kinect_cloud_) {
@@ -347,7 +347,7 @@ void EET12PclUtils::kinectCB(const sensor_msgs::PointCloud2ConstPtr& cloud) {
 
 // this callback wakes up when a new "selected Points" message arrives
 
-void EET12PclUtils::selectCB(const sensor_msgs::PointCloud2ConstPtr& cloud) {
+void CoplanarUtils::selectCB(const sensor_msgs::PointCloud2ConstPtr& cloud) {
     pcl::fromROSMsg(*cloud, *pclSelectedPoints_ptr_);
     ROS_INFO("RECEIVED NEW PATCH w/  %d * %d points", pclSelectedPoints_ptr_->width, pclSelectedPoints_ptr_->height);
     got_selected_points_ = true;

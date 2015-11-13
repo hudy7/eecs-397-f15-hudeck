@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(eet12_ps7)
+project(coplanar_ps7)
 
 find_package(catkin_simple REQUIRED)
 find_package(cmake_modules REQUIRED)

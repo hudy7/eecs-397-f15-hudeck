@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 
     // create instance of cwru_pcl_utils library
     // when this is instantiated, it initializes necessary subscribers (ex: subscriber to selected rviz points)
-    EET12PclUtils pcl_utils(&nh);
+    CoplanarUtils pcl_utils(&nh);
 
     // wait for a point cloud
     while (!pcl_utils.got_kinect_cloud())
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
             pcl_utils.fit_xformed_selected_pts_to_plane(plane_normal, plane_dist);
             ROS_INFO_STREAM("normal: " << plane_normal.transpose() << "dist: " << plane_dist);
 
-            pcl_utils.find_coplanar_points();
+            pcl_utils.find_coplanar();
 
             pcl_utils.get_gen_purpose_cloud(display_cloud);
         }

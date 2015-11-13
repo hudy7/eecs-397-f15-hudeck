@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package>
-  <name>eet12_ps7</name>
+  <name>coplanar_ps7</name>
   <version>0.0.0</version>
-  <description>The eet12_ps7 package</description>
+  <description>coplanar_ps7</description>
   
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="user@todo.todo">user</maintainer>
+  <maintainer email="nicholas.hudeck@case.edu">Nick Hudeck</maintainer>
 
   <!-- One license tag required, multiple allowed, one license per tag -->
   <!-- Commonly used license strings: -->
@@ -42,8 +42,7 @@
   <buildtool_depend>catkin_simple</buildtool_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>std_msgs</build_depend>
-  <!-- <build_depend>cwru_pcl_utils</build_depend> -->
-  <build_depend>eet12_pcl_utils</build_depend>
+  <build_depend>coplanar_utils</build_depend>
   <build_depend>pcl_ros</build_depend>
   <build_depend>pcl_conversions</build_depend>
   <build_depend>sensor_msgs</build_depend>
@@ -53,7 +52,6 @@
 
   <run_depend>roscpp</run_depend>
   <run_depend>std_msgs</run_depend>
-  <!-- <run_depend>cwru_pcl_utils</run_depend> -->
   <run_depend>my_pcl_utils</run_depend>
   <run_depend>pcl_ros</run_depend>
   <run_depend>pcl_conversions</run_depend>

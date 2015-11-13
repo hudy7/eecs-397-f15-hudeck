@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(hudeck_coplanar)
+project(coplanar_utils)
 
 find_package(catkin_simple REQUIRED)
 find_package(cmake_modules REQUIRED)
